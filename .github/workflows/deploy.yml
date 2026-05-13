@@ -24,10 +24,23 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t sibinovska/si-2026-lab3:master-latest .
+        run: |
+          if [ "${GITHUB_REF##*/}" = "master" ]; then
+            TAG=master-latest
+          else
+            TAG=feature-latest
+          fi
 
+          docker build -t sibinovska/si-2026-lab3:$TAG .
       - name: Push Docker image
-        run: docker push sibinovska/si-2026-lab3:master-latest
+        run: |
+          if [ "${GITHUB_REF##*/}" = "master" ]; then
+            TAG=master-latest
+          else
+            TAG=feature-latest
+          fi
+
+          docker push sibinovska/si-2026-lab3:$TAG
 
   deploy-github-pages:
     runs-on: ubuntu-latest
